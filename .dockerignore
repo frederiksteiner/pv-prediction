@@ -1,0 +1,13 @@
+.dvc
+.pyre
+.pytest_cache
+.venv
+__pycache__
+poetry.toml
+.git
+temp
+mlruns
+models
+experiments
+data
+charts

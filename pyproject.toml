@@ -1,0 +1,78 @@
+[tool.poetry]
+name = "pv-prediction"
+version = "0.1.0"
+description = ""
+authors = ["Frederik Steiner <steiner.frederik@gmail.com>"]
+readme = "README.md"
+packages = [{include = "pv_prediction", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.12, <3.13"
+pandas = "~2"
+requests = "^2.32.3"
+pyarrow = "^19.0.0"
+fastparquet = "^2024.11.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "~24.10.0"                                       # The uncompromising code formatter.
+coverage = {extras = ["toml"], version = "~7.6.0"}    # Code coverage measurement for Python
+unittest-xml-reporting = "~3.2"                     # unittest-based test runner with Ant/JUnit like XML reporting.
+pre-commit = "~4.0.0"                                 # A framework for managing and maintaining multi-language pre-commit hooks.
+pre-commit-hooks = "~5.0.0"                           # Some out-of-the-box hooks for pre-commit.
+pyre-check = "~0.9"                                 # A performant type checker for Python
+pydocstyle = "~6.3"                                 # Python docstring style checker
+pylint = "~3.3.0"                                    # python code static checker
+reorder-python-imports = "~3.14.0"                    # Tool for reordering python imports
+ipykernel = "^6.21"                                 # IPython Kernel for Jupyter
+freezegun = "^1.2.2"                                # Let your Python tests travel through time
+
+[tool.poetry.scripts]
+# Delete delta tables to complete a full load.
+extract-fronius-data = 'pv_prediction.data.fronius_connector:cli'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.main]
+fail-on = "F,E,W,C"
+fail-under = 0.0
+generated-members = ["mlflow.*", "patsy.*"]
+extension-pkg-whitelist = "numpy"
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "n", "s", "d", "ex", "Run", "_", "pk", "x", "y", "df", "f", "X", "ax"]
+
+[tool.pylint.format]
+max-line-length = 140
+max-args = 8
+
+[tool.pylint.messages_control]
+disable = [
+    # pydocstyle takes care of this...
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "missing-class-docstring",
+
+    # don't hinder me creating small classes!
+    "too-few-public-methods",
+
+    # reorder-python-imports should know what it's doing
+    "wrong-import-order",
+
+    # can't do much about duplicate imports in two files, I'm afraid...
+    "duplicate-code",
+]
+
+[tool.pylint.miscellaneous]
+notes = []  # don't warn about `TODO` and `FIXME` comments
+
+[tool.pylint.reports]
+output-format = "parseable:pylintout,text"
+
+[tool.pydocstyle]
+match-dir = "[^\\.][^test].*"
+ignore = ["D203", "D204", "D213", "D215", "D400", "D401", "D404", "D406", "D407", "D408", "D409", "D413", "D104", "D100"]
+
+[tool.coverage.run]
+command_line = "-m xmlrunner discover --output-file junittest.xml"
