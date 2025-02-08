@@ -94,7 +94,8 @@ class FroniusConnector:
     ) -> pd.DataFrame:
         delta = dt.timedelta(days=MAX_QUERY_DAYS)
         if not (end_date - start_date).days > MAX_QUERY_DAYS:
-            return self._query_data(start_date, end_date, parameters)
+            queried = self._query_data(start_date, end_date, parameters)
+            return pd.concat([queried])
         LOGGER.info(
             "Date difference exceeded the maximum amout of querieble data of %i days. Continuing with batchwise extraction.",
             MAX_QUERY_DAYS,
