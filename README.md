@@ -48,6 +48,9 @@ The following environment variables may be used to configure `pv_prediction`:
 | Environment Variable | Purpose | Default Value | Allowed Values |
 |----------------------|-|-|-|
 | LOG_LEVEL            | Sets the default log level [here](src/pr_prediction/common/logging.py). | "INFO" | See [Python Standard Library API-Reference](https://docs.python.org/3/library/logging.html#logging-levels) |
+| FRONIUS_IP | IP Adress of Fronius converter | "" | - |
+| METEO_USERNAME | Username for the meteomatics API | "" | Sign up for a free account [here](https://www.meteomatics.com/en/sign-up-weather-api-free-basic-account/) |
+| METEO_PASSWORD | Password for the meteomatics API | "" | Sign up for a free account [here](https://www.meteomatics.com/en/sign-up-weather-api-free-basic-account/) |
 
 
 #### Credentials
@@ -55,18 +58,12 @@ The following environment variables may be used to configure `pv_prediction`:
 Create a file called env.sh. Place exports for all the environment variables inside of it, e.g.:
 ```shell
 export FRONIUS_IP=SOME_IP
-export LOCATION_COORDINATES=SOME_COORDINATES
+export METEO_USERNAME=SOME_USERNAME
+export METEO_PASSWORD=SOME_PASSWORD
 ```
 Then, execute the bash file via the CLI as follows:
 ```shell
 source env.sh
-```
-
-##### Credentials for Meteomatics API
-
-The following environment variables define the correct Meteomatics API:
-```shell
-WEATHER_API_TOKEN=SOME_TOKEN
 ```
 
 
