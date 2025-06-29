@@ -12,6 +12,12 @@ pandas = "~2"
 requests = "^2.32.3"
 pyarrow = "^19.0.0"
 fastparquet = "^2024.11.0"
+matplotlib = "^3.10.0"
+scipy = "^1.15.2"
+seaborn = "^0.13.2"
+fastapi = {extras = ["standard"], version = "^0.115.12"}
+scikit-learn = "~1.7.0"
+statsmodels = "^0.14.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "~24.10.0"                                       # The uncompromising code formatter.
