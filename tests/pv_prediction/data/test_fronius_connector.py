@@ -1,4 +1,3 @@
-import datetime as dt
 import unittest
 
 import pandas as pd
@@ -50,14 +49,16 @@ class TestFroniusConnector(unittest.TestCase):
             result,
             pd.DataFrame(
                 {
-                    "Param1": [1, 3, 2],
-                    "Param2": [4, 5, 6],
+                    "Param1": [4, 5, 6],
+                    "Param2": [1, 3, 2],
                     "Param3": [0.1, 0.2, 0.3],
                 },
-                index=[
-                    pd.to_datetime("2024-07-24T00:00:01+02:00"),
-                    pd.to_datetime("2024-07-24T00:00:02+02:00"),
-                    pd.to_datetime("2024-07-24T00:00:03+02:00"),
-                ],
+                index=pd.Series(
+                    [
+                        pd.to_datetime("2024-07-09T00:00:01+02:00"),
+                        pd.to_datetime("2024-07-09T00:00:02+02:00"),
+                        pd.to_datetime("2024-07-09T00:00:03+02:00"),
+                    ]
+                ),
             ),
         )

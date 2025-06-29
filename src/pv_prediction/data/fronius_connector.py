@@ -1,5 +1,7 @@
+import dataclasses
 import datetime as dt
 import logging
+import os
 import pathlib
 from typing import Any
 from typing import Iterator
@@ -8,27 +10,33 @@ import click
 import pandas as pd
 import requests
 
-from pv_prediction.common.config import Config
-from pv_prediction.common.config import resolve_config
-
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
 MAX_QUERY_DAYS: int = 16
 
 
+@dataclasses.dataclass()
+class FroniusConfig:
+    """Fronius related configs."""
+
+    ip_adress: str = dataclasses.field(
+        default_factory=lambda: os.getenv("FRONIUS_IP", "")
+    )
+
+
 class FroniusConnector:
     """Connector used to extract data from Fronius converter."""
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: FroniusConfig | None = None) -> None:
         """Initializes a Fronius connector to extract data of the corresponding API."""
         session = requests.Session()
         session.trust_env = False
         self.session: requests.Session = session
-        self.config = config
+        self.config: FroniusConfig = config if config is not None else FroniusConfig()
 
     def _query_data(
         self, start_date: dt.date, end_date: dt.date, parameters: list[str]
-    ) -> pd.DataFrame | None:
+    ) -> pd.DataFrame:
         date_format = "%-d.%-m.%Y"
         LOGGER.info(
             "Starting extraction from %s to %s",
@@ -37,18 +45,15 @@ class FroniusConnector:
         )
         channels = "".join([f"Channel={p}" for p in parameters])
         url = (
-            f"http://{self.config.fronius.ip_adress}/solar_api/v1/&"
+            f"http://{self.config.ip_adress}/solar_api/v1/&"
             + "GetArchiveData.cgi?Scope=System"
             + f"StartDate={start_date.strftime(date_format)}&"
             + f"EndDate={end_date.strftime(date_format)}&"
             + f"{channels}"
         )
         LOGGER.debug("Calling the following url: %s", url)
-        try:
-            response = self.session.get(url)
-            return self._transform_response(response, parameters)
-        except:
-            print(f"An Error occured when requesting from {start_date} to {end_date}")
+        response = self.session.get(url)
+        return self._transform_response(response, parameters)
 
     @classmethod
     def _iterate_over_body(
@@ -82,12 +87,10 @@ class FroniusConnector:
     @classmethod
     def _transform_response(
         cls, response: requests.Response, parameters: list[str]
-    ) -> pd.DataFrame | None:
+    ) -> pd.DataFrame:
         response.raise_for_status()
         json_data = response.json()
-        data = json_data["Body"]["Data"]
-        if data:
-            return cls._iterate_over_body(json_data, parameters)
+        return cls._iterate_over_body(json_data["Body"]["Data"], parameters)
 
     def _get_data(
         self, start_date: dt.date, end_date: dt.date, parameters: list[str]
@@ -174,5 +177,4 @@ def cli(
     parameters: list[str],
 ) -> None:
     """Extracts data from a Fronius converter."""
-    config = resolve_config()
-    FroniusConnector(config).extract_data(start_date, end_date, output_file, parameters)
+    FroniusConnector().extract_data(start_date, end_date, output_file, parameters)
