@@ -4,6 +4,8 @@ import pandas as pd
 
 from pv_prediction.data.fronius_connector import FroniusConnector
 
+# pylint: disable=protected-access
+
 
 class TestFroniusConnector(unittest.TestCase):
     def test_iterate_over_body(self) -> None:

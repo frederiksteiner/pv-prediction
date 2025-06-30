@@ -2,7 +2,6 @@ import unittest
 
 import pandas as pd
 
-from pv_prediction.data.fronius_connector import FroniusConnector
 from pv_prediction.model.custom_blocks.select_subset import SelectSubset
 
 
