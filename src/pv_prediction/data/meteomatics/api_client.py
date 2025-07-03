@@ -2,7 +2,6 @@ import dataclasses
 import datetime as dt
 import os
 
-import pandas as pd
 import pytz
 import requests
 
@@ -48,7 +47,7 @@ class APIClient:
         date: dt.date,
         parameters: list[str],
         locations: list[tuple[float, float]],
-    ) -> pd.DataFrame:
+    ) -> WeatherResponse:
         """Fetch weather data from the Meteomatics API for specific date.
 
         Args:
@@ -68,12 +67,11 @@ class APIClient:
         iso_date_string = (
             datetime.isoformat() + "--" + following_day.isoformat() + ":PT1H"
         )
-        weather_response = self._get_weather_data(
+        return self._get_weather_data(
             iso_date_string,
             parameters,
             locations,
         )
-        return self._parse_response(weather_response)
 
     def _get_weather_data(
         self,
@@ -97,25 +95,3 @@ class APIClient:
                 f"The response format {response_format} has not been implemented yet"
             )
         return WeatherResponse(**response.json())
-
-    @staticmethod
-    def _parse_response(response: WeatherResponse) -> pd.DataFrame:
-        rows = []
-        for param in response.data:
-            parameter = param.parameter
-            for coord in param.coordinates:
-                for date_value in coord.dates:
-                    rows.append(
-                        {
-                            "lat": coord.lat,
-                            "lon": coord.lon,
-                            "date": date_value.date,
-                            parameter: date_value.value,
-                        }
-                    )
-
-        return (
-            pd.DataFrame(rows)
-            .groupby(["lat", "lon", "date"], as_index=False)
-            .agg("first")
-        )

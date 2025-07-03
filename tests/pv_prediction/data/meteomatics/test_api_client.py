@@ -2,7 +2,6 @@ import datetime as dt
 import unittest
 from unittest import mock
 
-import pandas as pd
 from pydantic import ValidationError
 
 from pv_prediction.data.meteomatics.api_client import APIClient
@@ -61,10 +60,9 @@ class TestAPIClient(unittest.TestCase):
             ],
         }
 
-    @mock.patch("pv_prediction.data.meteomatics.api_client.APIClient._parse_response")
     @mock.patch("pv_prediction.data.meteomatics.api_client.APIClient._get_weather_data")
     def test_get_weather_data_for_date(
-        self, mock_get_weather_data: mock.MagicMock, mock_parse_response: mock.MagicMock
+        self, mock_get_weather_data: mock.MagicMock
     ) -> None:
         result = self.client.get_weather_data_for_date(
             dt.date(2025, 12, 12), ["param1", "param2"], [(1.0, 2.0)]
@@ -74,8 +72,7 @@ class TestAPIClient(unittest.TestCase):
             ["param1", "param2"],
             [(1.0, 2.0)],
         )
-        mock_parse_response.assert_called_once_with(mock_get_weather_data.return_value)
-        self.assertEqual(result, mock_parse_response.return_value)
+        self.assertEqual(result, mock_get_weather_data.return_value)
 
     @mock.patch("pv_prediction.data.meteomatics.api_client.requests.get")
     def test_get_weather_data(self, mock_get: mock.MagicMock) -> None:
@@ -122,27 +119,4 @@ class TestAPIClient(unittest.TestCase):
             "https://api.meteomatics.com/date_range/param1,param2/1.0,1.0,2.0,2.0/csv",
             auth=("user", "password"),
             timeout=10,
-        )
-
-    def test_parse_response(self) -> None:
-        # pyre-ignore[6]
-        result = APIClient._parse_response(WeatherResponse(**self.response))
-        pd.testing.assert_frame_equal(
-            pd.DataFrame(
-                {
-                    "lat": 2 * [30.556],
-                    "lon": 2 * [5.693083],
-                    "date": [
-                        dt.datetime(2025, 6, 28, 22, 0, 0, 0, tzinfo=dt.timezone.utc),
-                        dt.datetime(2025, 6, 29, 0, 0, 0, 0, tzinfo=dt.timezone.utc),
-                    ],
-                    "t_2m:C": [20.1, 18.2],
-                    "sunrise:sql": [
-                        dt.datetime(2025, 6, 28, 3, 40, 0, 0, tzinfo=dt.timezone.utc),
-                        dt.datetime(2025, 6, 28, 3, 40, 0, 0, tzinfo=dt.timezone.utc),
-                    ],
-                }
-            ),
-            result,
-            check_dtype=False,
         )

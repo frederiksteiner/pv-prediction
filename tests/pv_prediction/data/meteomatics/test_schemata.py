@@ -50,21 +50,21 @@ class TestWeatherResponse(unittest.TestCase):
             ],
         }
 
-        response = WeatherResponse(**response) # pyre-ignore[6]
+        response = WeatherResponse(**response)  # pyre-ignore[6]
         result = response.flatten_response()
         self.assertEqual(
             [
                 FlattenedWeather(
                     lat=30.556,
                     lon=5.693083,
-                    date="2025-06-28T22:00:00Z", # pyre-ignore[6]
+                    date="2025-06-28T22:00:00Z",  # pyre-ignore[6]
                     t_2m=20.1,
                     uv=1,
                 ),
                 FlattenedWeather(
                     lat=30.556,
                     lon=5.693083,
-                    date="2025-06-29T00:00:00Z", # pyre-ignore[6]
+                    date="2025-06-29T00:00:00Z",  # pyre-ignore[6]
                     t_2m=18.2,
                     uv=2,
                 ),
