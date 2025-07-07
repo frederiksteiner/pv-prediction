@@ -38,7 +38,7 @@ class TestInferencingRunner(unittest.TestCase):
         mock_model = mock.MagicMock()
         runner = InferencingRunner()
         runner._model = mock_model
-        mock_model.model_info.model_id = "id"
+        mock_model.model_info.model_uuid = "id"
         mock_model.predict.side_effect = lambda x: x.shape[0] * [1]
         response = {
             "version": "3.0",
@@ -70,9 +70,9 @@ class TestInferencingRunner(unittest.TestCase):
                 model_id="id",
                 predictions=[
                     # pyre-ignore[6]
-                    Prediction(date="2025-06-28T22:00:00Z", enegry_produced=1),
+                    Prediction(date="2025-06-28T22:00:00Z", energy_produced=1),
                     # pyre-ignore[6]
-                    Prediction(date="2025-06-29T00:00:00Z", enegry_produced=1),
+                    Prediction(date="2025-06-29T00:00:00Z", energy_produced=1),
                 ],
             ),
         )

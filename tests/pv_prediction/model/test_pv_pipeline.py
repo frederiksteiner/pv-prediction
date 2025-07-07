@@ -27,8 +27,14 @@ class TestPVPipeline(unittest.TestCase):
         )
         self.assertEqual(pipeline.model_info, mock_log_model.return_value)
 
+    @mock.patch("pv_prediction.model.pv_pipeline.mlflow.models.get_model_info")
     @mock.patch("pv_prediction.model.pv_pipeline.mlflow.sklearn.load_model")
-    def test_load_from_mlflow(self, mock_load_model: mock.MagicMock) -> None:
+    def test_load_from_mlflow(
+        self, mock_load_model: mock.MagicMock, mock_get_model_info: mock.MagicMock
+    ) -> None:
+        mock_set_model_info = mock_load_model.return_value.set_model_info
         model = PVPipeline.load_from_mlflow("name", "alias")
         mock_load_model.assert_called_once_with("models:/name@alias")
+        mock_get_model_info.assert_called_once_with("models:/name@alias")
+        mock_set_model_info.assert_called_once_with(mock_get_model_info.return_value)
         self.assertEqual(model, mock_load_model.return_value)

@@ -16,7 +16,7 @@ class Prediction(BaseModel):
     """PV prediction at some time."""
 
     date: DateTime
-    enegry_produced: float
+    energy_produced: float
 
 
 class PredictionResponse(BaseModel):
@@ -62,11 +62,11 @@ class InferencingRunner:
         return PredictionResponse(
             pv_id=str(1),
             prediction_time=dt.datetime.now(dt.timezone.utc),
-            model_id=self.model.model_info.model_id,
+            model_id=self.model.model_info.model_uuid,
             predictions=[
                 Prediction(
                     date=ele.date,
-                    enegry_produced=preds[i],
+                    energy_produced=preds[i],
                 )
                 for i, ele in enumerate(flattened)
             ],
@@ -74,5 +74,4 @@ class InferencingRunner:
 
     def run(self, pv_to_predict: WeatherResponse) -> PredictionResponse:
         """Run the prediction on the provided weather data."""
-        with self._lock:
-            return self.apply_model(pv_to_predict)
+        return self.apply_model(pv_to_predict)

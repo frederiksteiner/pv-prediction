@@ -48,8 +48,14 @@ class PVPipeline(Pipeline):
             self, registered_model_name="pv_model"
         )
 
+    def set_model_info(self, model_info: mlflow.models.model.ModelInfo) -> None:
+        """Set model info."""
+        self._model_info = model_info
+
     @staticmethod
     def load_from_mlflow(model_name: str, model_version_alias: str) -> PVPipeline:
         """Load model from mlflow by specifying model_name and model_version."""
         model_uri = f"models:/{model_name}@{model_version_alias}"
-        return mlflow.sklearn.load_model(model_uri)
+        model: PVPipeline = mlflow.sklearn.load_model(model_uri)
+        model.set_model_info(mlflow.models.get_model_info(model_uri))
+        return model
