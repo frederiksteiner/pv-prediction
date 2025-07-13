@@ -86,7 +86,7 @@ class DBSessionManager:
             try:
                 session = self._session_maker()
                 self._session_pool.put(session)
-            except Exception as e:
+            except ConnectionError as e:
                 print(f"Error creating session: {e}")
 
     @classmethod

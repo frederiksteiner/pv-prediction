@@ -43,10 +43,10 @@ class FroniusConnector:
             start_date.strftime(date_format),
             end_date.strftime(date_format),
         )
-        channels = "".join([f"Channel={p}" for p in parameters])
+        channels = "&".join([f"Channel={p}" for p in parameters])
         url = (
-            f"http://{self.config.ip_adress}/solar_api/v1/&"
-            + "GetArchiveData.cgi?Scope=System"
+            f"http://{self.config.ip_adress}/solar_api/v1/"
+            + "GetArchiveData.cgi?Scope=System&"
             + f"StartDate={start_date.strftime(date_format)}&"
             + f"EndDate={end_date.strftime(date_format)}&"
             + f"{channels}"
@@ -166,7 +166,11 @@ class FroniusConnector:
     "--parameters",
     "-p",
     multiple=True,
-    default=["EnergyReal_WAC_Sum_Produced"],
+    default=[
+        "EnergyReal_WAC_Sum_Produced",
+        "EnergyReal_WAC_Minus_Absolute",
+        "EnergyReal_WAC_Plus_Absolute",
+    ],
     type=click.STRING,
     help="Parameters to query for",
 )
@@ -174,7 +178,7 @@ def cli(
     start_date: dt.datetime,
     end_date: dt.datetime,
     output_file: pathlib.Path,
-    parameters: list[str],
+    parameters: tuple[str, ...],
 ) -> None:
     """Extracts data from a Fronius converter."""
-    FroniusConnector().extract_data(start_date, end_date, output_file, parameters)
+    FroniusConnector().extract_data(start_date, end_date, output_file, list(parameters))
