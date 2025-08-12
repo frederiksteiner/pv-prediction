@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from pv_prediction.data.fronius_connector import FroniusConnector
+from pv_prediction.data.converter.fronius_connector import FroniusConnector
 
 # pylint: disable=protected-access
 
